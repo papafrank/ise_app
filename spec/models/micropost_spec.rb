@@ -3,7 +3,8 @@ require 'spec_helper'
 describe Micropost do
 
   let(:user) { FactoryGirl.create(:user) }
-  before { @micropost = user.microposts.build(content: "Lorem ipsum") }
+  #before { @micropost = user.microposts.build(content: "Lorem ipsum") }
+  before { @micropost = user.microposts.build(content: "Good Day CMU!") }
 
   subject { @micropost }
 

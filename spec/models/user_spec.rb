@@ -77,7 +77,8 @@ describe User do
   end
 
   describe "when name is too long" do
-    before { @user.name = "a" * 51 }
+    #before { @user.name = "a" * 51 }
+    before { @user.name = "a" * 41 }
     it { should_not be_valid }
   end
 
@@ -128,7 +129,7 @@ describe User do
   end
 
   describe "with a password that's too short" do
-    before { @user.password = @user.password_confirmation = "a" * 5 }
+    before { @user.password = @user.password_confirmation = "a" * 3 }
     it { should be_invalid }
   end
 
@@ -183,7 +184,7 @@ describe User do
 
       before do
         @user.follow!(followed_user)
-        3.times { followed_user.microposts.create!(content: "Lorem ipsum") }
+        3.times { followed_user.microposts.create!(content: "Good Day CMU!") }
       end
 
       its(:feed) { should include(newer_micropost) }

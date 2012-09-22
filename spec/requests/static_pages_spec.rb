@@ -7,15 +7,17 @@ describe "Static pages" do
   describe "Home page" do
     before { visit root_path }
 
-    it { should have_selector('h1',    text: 'Sample App') }
+    #it { should have_selector('h1',    text: 'Sample App') }
+    it { should have_selector('h1',    text: 'ISE App') }
     it { should have_selector('title', text: full_title('')) }
     it { should_not have_selector 'title', text: '| Home' }
 
     describe "for signed-in users" do
       let(:user) { FactoryGirl.create(:user) }
       before do
-        FactoryGirl.create(:micropost, user: user, content: "Lorem")
-        FactoryGirl.create(:micropost, user: user, content: "Ipsum")
+        FactoryGirl.create(:micropost, user: user, content: "Good")
+        FactoryGirl.create(:micropost, user: user, content: "Day")
+        FactoryGirl.create(:micropost, user: user, content: "CMU!")
         sign_in user
         visit root_path
       end
