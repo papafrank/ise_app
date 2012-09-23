@@ -55,7 +55,7 @@ describe "User pages" do
     before { visit signup_path }
 
     it { should have_selector('h1',    text: 'Sign up') }
-    it { should have_selector('title', text: full_title('Sign up Today')) }
+    it { should have_selector('title', text: full_title('Sign up')) }
   end
 
   describe "profile page" do
@@ -70,7 +70,7 @@ describe "User pages" do
 
     before { visit signup_path }
 
-    let(:submit) { "Create my account" }
+    let(:submit) { "Create my mini twitter account" }
 
     describe "with invalid information" do
       it "should not create a user" do
@@ -173,7 +173,7 @@ describe "User pages" do
     end
 
     describe "with invalid information" do
-      before { click_button "Save changes" }
+      before { click_button "Click here to save" }
 
       it { should have_content('error') }
     end
@@ -186,7 +186,7 @@ describe "User pages" do
         fill_in "Email",            with: new_email
         fill_in "Password",         with: user.password
         fill_in "Confirm Password", with: user.password
-        click_button "Save changes"
+        click_button "Click here to save"
       end
 
       it { should have_selector('title', text: new_name) }

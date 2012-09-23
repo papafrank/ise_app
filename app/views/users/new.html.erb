@@ -1,5 +1,5 @@
 <% provide(:title, 'Sign up') %>
-<h1>Sign up today</h1>
+<h1>Sign up</h1>
 
 <div class="row">
   <div class="span6 offset3">
@@ -18,7 +18,8 @@
       <%= f.label :password_confirmation, "Confirmation" %>
       <%= f.password_field :password_confirmation %>
 
-      <%= f.submit "Create my account", class: "btn btn-small" %>
+      <%= f.submit "Create my mini twitter account", class: "btn btn-small" %>
+      <%= f.label "I can't wait to see you in this mini twitter"%>
     <% end %>
   </div>
 </div>
