@@ -4,6 +4,7 @@
 
 $grayMediumLight: #eaeaea;
 $midnightblue: #191970;
+$yellow : #ffff00;
 
 @mixin box_sizing {
   -moz-box-sizing: border-box; 
@@ -26,7 +27,8 @@ section {
 }
 
 textarea {
-  resize: vertical;
+  /*resize: vertical;*/
+  resize: horizontal;
 }
 
 .center {
@@ -50,12 +52,12 @@ h1 {
 }
 
 h2 {
-  font-size: 1.1em;
+  font-size: 1.7em;
   letter-spacing: -1px;
   margin-bottom: 30px;
   text-align: center;
-  font-weight: normal;
-  color: $grayLight;
+  font-weight: bolder;
+  color: $midnightblue;
 }
 
 p {
@@ -69,7 +71,7 @@ p {
 #logo {
   float: center;
   margin-right: 10px;
-  font-size: 2em;
+  font-size: 2.4em;
   color: white;
   text-transform: uppercase;
   letter-spacing: -1px;
@@ -147,10 +149,11 @@ aside {
 .stats {
   overflow: auto;
   a {
-    float: left;
+    /*float: left;*/
+    float: center;
     padding: 0 10px;
     border-left: 1px solid $grayLighter;
-    color: gray;
+    color: #008b8b;
     &:first-child {
       padding-left: 0;
       border: 0;
@@ -207,8 +210,12 @@ input, textarea, select, .uneditable-input {
 .users {
   list-style: none;
   margin: 0;
-  font-weight: bold;
-  color: midnightblue;
+  /*font-weight: bold;*/
+  font-weight: normal;
+  /*color: midnightblue;*/
+  text-align: right;
+  font-size: x-large;
+  color: #ff9900;
   li {
     overflow: auto;
     padding: 10px 0;
@@ -229,7 +236,8 @@ input, textarea, select, .uneditable-input {
   li {
     padding: 10px 0;
     border-top: 1px solid #8E388E;
-    color: midnightblue;
+    /*color: midnightblue;*/
+    color: #ff9900;
     font-weight: bold;
   }
 }

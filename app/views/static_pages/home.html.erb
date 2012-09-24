@@ -1,23 +1,23 @@
 <% if signed_in? %>
   <div class="row">
-    <aside class="span4">
+    <aside class="span8">
       <section>
         <%= render 'shared/user_info' %>
       </section>
       <section>
         <%= render 'shared/micropost_form' %>
       </section>
-      <section>
+      <!-- <section>
         <%= render 'shared/user_info' %>
-      </section>
+      </section> -->
       <section>
         <%= render 'shared/stats' %>
       </section>
-      <section>
+      <!-- <section>
         <%= render 'shared/micropost_form' %>
-      </section>
+      </section> -->
     </aside>
-    <div class="span8">
+    <div class="span4">
       <h3>Your all Mini Twitter Messages</h3>
       <%= render 'shared/feed' %>
     </div>
@@ -31,7 +31,7 @@
     </h2>
 
     <%= link_to "Sign up now!", signup_path, 
-                                class: "btn btn-large btn-primary" %>
+                                class: "btn btn-large" %>
   </div>
 
   <%= link_to image_tag("cmu_icon.png", alt: "CMU"), 'http://cmu.edu/' %>
