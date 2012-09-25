@@ -18,6 +18,12 @@ class MicropostsController < ApplicationController
     redirect_to root_url
   end
 
+  def like
+    flash[:success] = "Liked!"
+    Like.create!(:user_id=> current_user.id, :micropost_id=> params[:id])
+    redirect_to root_url
+  end
+
   private
 
     def correct_user

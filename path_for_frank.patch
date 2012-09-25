@@ -1,0 +1,192 @@
+Index: db/schema.rb
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+># encoding: UTF-8\n# This file is auto-generated from the current state of the database. Instead\n# of editing this file, please use the migrations feature of Active Record to\n# incrementally modify your database, and then regenerate this schema definition.\n#\n# Note that this schema.rb definition is the authoritative source for your\n# database schema. If you need to create the application database on another\n# system, you should be using db:schema:load, not running all the migrations\n# from scratch. The latter is a flawed and unsustainable approach (the more migrations\n# you'll amass, the slower it'll run and the greater likelihood for issues).\n#\n# It's strongly recommended to check this file into your version control system.\n\nActiveRecord::Schema.define(:version => 20120920022805) do\n\n  create_table \"microposts\", :force => true do |t|\n    t.string   \"content\"\n    t.integer  \"user_id\"\n    t.datetime \"created_at\", :null => false\n    t.datetime \"updated_at\", :null => false\n  end\n\n  add_index \"microposts\", [\"user_id\", \"created_at\"], :name => \"index_microposts_on_user_id_and_created_at\"\n\n  create_table \"relationships\", :force => true do |t|\n    t.integer  \"follower_id\"\n    t.integer  \"followed_id\"\n    t.datetime \"created_at\",  :null => false\n    t.datetime \"updated_at\",  :null => false\n  end\n\n  add_index \"relationships\", [\"followed_id\"], :name => \"index_relationships_on_followed_id\"\n  add_index \"relationships\", [\"follower_id\", \"followed_id\"], :name => \"index_relationships_on_follower_id_and_followed_id\", :unique => true\n  add_index \"relationships\", [\"follower_id\"], :name => \"index_relationships_on_follower_id\"\n\n  create_table \"users\", :force => true do |t|\n    t.string   \"name\"\n    t.string   \"email\"\n    t.datetime \"created_at\",                         :null => false\n    t.datetime \"updated_at\",                         :null => false\n    t.string   \"password_digest\"\n    t.string   \"remember_token\"\n    t.boolean  \"admin\",           :default => false\n  end\n\n  add_index \"users\", [\"email\"], :name => \"index_users_on_email\", :unique => true\n  add_index \"users\", [\"remember_token\"], :name => \"index_users_on_remember_token\"\n\nend\n
+===================================================================
+--- db/schema.rb	(revision e5147d700f1dd2ebeae19709c50844370baafba3)
++++ db/schema.rb	(revision )
+@@ -11,7 +11,14 @@
+ #
+ # It's strongly recommended to check this file into your version control system.
+ 
+-ActiveRecord::Schema.define(:version => 20120920022805) do
++ActiveRecord::Schema.define(:version => 20120925161637) do
++
++  create_table "likes", :force => true do |t|
++    t.integer  "user_id"
++    t.integer  "micropost_id"
++    t.datetime "created_at",   :null => false
++    t.datetime "updated_at",   :null => false
++  end
+ 
+   create_table "microposts", :force => true do |t|
+     t.string   "content"
+Index: Gemfile
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>source 'https://rubygems.org'\n\ngem 'rails', '3.2.8'\ngem 'bootstrap-sass', '2.0.4' # Listing 5.3 20120913\ngem 'bcrypt-ruby', '3.0.1' # Listing 6.24\ngem 'faker', '1.0.1' # Listing 9.29\ngem 'will_paginate', '3.0.3'\ngem 'bootstrap-will_paginate', '0.0.6'\n\n# Bundle edge Rails instead:\n# gem 'rails', :git => 'git://github.com/rails/rails.git'\ngroup :development, :test do\n  gem 'sqlite3', '1.3.5'\n  gem 'rspec-rails', '2.11.0'\nend\n\ngem 'annotate', '2.5.0', group: :development\n\n# Gems used only for assets and not required\n# in production environments by default.\n\ngroup :assets do\n  gem 'sass-rails',   '3.2.5'\n  gem 'coffee-rails', '3.2.2'\n  gem 'uglifier', '1.2.3'\nend\n\ngem 'jquery-rails', '2.0.2'\n\ngroup :test do\n  gem 'capybara', '1.1.2'\n  gem 'factory_girl_rails', '1.4.0'\nend\n\ngroup :production do\n  gem 'pg', '0.12.2'\nend
+===================================================================
+--- Gemfile	(revision e5147d700f1dd2ebeae19709c50844370baafba3)
++++ Gemfile	(revision )
+@@ -6,12 +6,14 @@
+ gem 'faker', '1.0.1' # Listing 9.29
+ gem 'will_paginate', '3.0.3'
+ gem 'bootstrap-will_paginate', '0.0.6'
++gem 'therubyracer'
+ 
+ # Bundle edge Rails instead:
+ # gem 'rails', :git => 'git://github.com/rails/rails.git'
+ group :development, :test do
+   gem 'sqlite3', '1.3.5'
+   gem 'rspec-rails', '2.11.0'
++  gem 'debugger'
+ end
+ 
+ gem 'annotate', '2.5.0', group: :development
+\ No newline at end of file
+Index: config/routes.rb
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>SampleApp::Application.routes.draw do\n  resources :users do\n    member do\n      get :following, :followers\n    end\n  end\n  #get \"users/new\" 20120916 masked by listinig 7.3\n  resources :sessions, only: [:new, :create, :destroy]\n  resources :microposts, only: [:create, :destroy]\n\n  resources :sessions,      only: [:new, :create, :destroy]\n  resources :microposts,    only: [:create, :destroy]\n  resources :relationships, only: [:create, :destroy]\n\n  root to: 'static_pages#home'\n\n  match '/signup',  to: 'users#new'\n  match '/signin',  to: 'sessions#new'\n  match '/signout', to: 'sessions#destroy', via: :delete\n\n  match '/help',    to: 'static_pages#help'\n  match '/about',   to: 'static_pages#about'\n  match '/contact', to: 'static_pages#contact'\n\n  # The priority is based upon order of creation:\n  # first created -> highest priority.\n\n  # Sample of regular route:\n  #   match 'products/:id' => 'catalog#view'\n  # Keep in mind you can assign values other than :controller and :action\n\n  # Sample of named route:\n  #   match 'products/:id/purchase' => 'catalog#purchase', :as => :purchase\n  # This route can be invoked with purchase_url(:id => product.id)\n\n  # Sample resource route (maps HTTP verbs to controller actions automatically):\n  #   resources :products\n\n  # Sample resource route with options:\n  #   resources :products do\n  #     member do\n  #       get 'short'\n  #       post 'toggle'\n  #     end\n  #\n  #     collection do\n  #       get 'sold'\n  #     end\n  #   end\n\n  # Sample resource route with sub-resources:\n  #   resources :products do\n  #     resources :comments, :sales\n  #     resource :seller\n  #   end\n\n  # Sample resource route with more complex sub-resources\n  #   resources :products do\n  #     resources :comments\n  #     resources :sales do\n  #       get 'recent', :on => :collection\n  #     end\n  #   end\n\n  # Sample resource route within a namespace:\n  #   namespace :admin do\n  #     # Directs /admin/products/* to Admin::ProductsController\n  #     # (app/controllers/admin/products_controller.rb)\n  #     resources :products\n  #   end\n\n  # You can have the root of your site routed with \"root\"\n  # just remember to delete public/index.html.\n  # root :to => 'welcome#index'\n\n  # See how all your routes lay out with \"rake routes\"\n\n  # This is a legacy wild controller route that's not recommended for RESTful applications.\n  # Note: This route will make all actions in every controller accessible via GET requests.\n  # match ':controller(/:action(/:id))(.:format)'\nend\n
+===================================================================
+--- config/routes.rb	(revision e5147d700f1dd2ebeae19709c50844370baafba3)
++++ config/routes.rb	(revision )
+@@ -6,13 +6,12 @@
+   end
+   #get "users/new" 20120916 masked by listinig 7.3
+   resources :sessions, only: [:new, :create, :destroy]
+-  resources :microposts, only: [:create, :destroy]
+-
+-  resources :sessions,      only: [:new, :create, :destroy]
+-  resources :microposts,    only: [:create, :destroy]
++  resources :microposts, only: [:create, :destroy, :like]
+   resources :relationships, only: [:create, :destroy]
+ 
+   root to: 'static_pages#home'
++
++  match '/like/:id', to: 'microposts#like', as: 'like'
+ 
+   match '/signup',  to: 'users#new'
+   match '/signin',  to: 'sessions#new'
+Index: app/models/like.rb
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/models/like.rb	(revision )
++++ app/models/like.rb	(revision )
+@@ -0,0 +1,5 @@
++class Like < ActiveRecord::Base
++
++  attr_accessible :micropost_id, :user_id
++
++end
+\ No newline at end of file
+Index: app/views/microposts/_micropost.html.erb
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><li>\n  <span class=\"content\"><%= micropost.content %></span>\n  <span class=\"timestamp\">\n    Posted <%= time_ago_in_words(micropost.created_at) %> ago.\n  </span>\n  <% if current_user?(micropost.user) %>\n    <%= link_to \"delete\", micropost, method: :delete,\n                                     data: { confirm: \"Are You sure? This might be very important\" },\n                                     title: micropost.content %>\n  <% end %>\n  <%= link_to \"Need Help?\",help_path %>\n</li>
+===================================================================
+--- app/views/microposts/_micropost.html.erb	(revision e5147d700f1dd2ebeae19709c50844370baafba3)
++++ app/views/microposts/_micropost.html.erb	(revision )
+@@ -5,8 +5,11 @@
+   </span>
+   <% if current_user?(micropost.user) %>
+     <%= link_to "delete", micropost, method: :delete,
++
+                                      data: { confirm: "Are You sure? This might be very important" },
+                                      title: micropost.content %>
++  <%else%>
++      <%= link_to "like", like_path, method: :like  %>
+-  <% end %>
++<% end %>
+   <%= link_to "Need Help?",help_path %>
+ </li>
+\ No newline at end of file
+Index: Gemfile.lock
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>GEM\n  remote: https://rubygems.org/\n  specs:\n    actionmailer (3.2.8)\n      actionpack (= 3.2.8)\n      mail (~> 2.4.4)\n    actionpack (3.2.8)\n      activemodel (= 3.2.8)\n      activesupport (= 3.2.8)\n      builder (~> 3.0.0)\n      erubis (~> 2.7.0)\n      journey (~> 1.0.4)\n      rack (~> 1.4.0)\n      rack-cache (~> 1.2)\n      rack-test (~> 0.6.1)\n      sprockets (~> 2.1.3)\n    activemodel (3.2.8)\n      activesupport (= 3.2.8)\n      builder (~> 3.0.0)\n    activerecord (3.2.8)\n      activemodel (= 3.2.8)\n      activesupport (= 3.2.8)\n      arel (~> 3.0.2)\n      tzinfo (~> 0.3.29)\n    activeresource (3.2.8)\n      activemodel (= 3.2.8)\n      activesupport (= 3.2.8)\n    activesupport (3.2.8)\n      i18n (~> 0.6)\n      multi_json (~> 1.0)\n    addressable (2.3.2)\n    annotate (2.5.0)\n      rake\n    arel (3.0.2)\n    bcrypt-ruby (3.0.1)\n    bootstrap-sass (2.0.4.0)\n    bootstrap-will_paginate (0.0.6)\n      will_paginate\n    builder (3.0.3)\n    capybara (1.1.2)\n      mime-types (>= 1.16)\n      nokogiri (>= 1.3.3)\n      rack (>= 1.0.0)\n      rack-test (>= 0.5.4)\n      selenium-webdriver (~> 2.0)\n      xpath (~> 0.1.4)\n    childprocess (0.3.5)\n      ffi (~> 1.0, >= 1.0.6)\n    coffee-rails (3.2.2)\n      coffee-script (>= 2.2.0)\n      railties (~> 3.2.0)\n    coffee-script (2.2.0)\n      coffee-script-source\n      execjs\n    coffee-script-source (1.3.3)\n    diff-lcs (1.1.3)\n    erubis (2.7.0)\n    execjs (1.4.0)\n      multi_json (~> 1.0)\n    factory_girl (2.3.2)\n      activesupport\n    factory_girl_rails (1.4.0)\n      factory_girl (~> 2.3.0)\n      railties (>= 3.0.0)\n    faker (1.0.1)\n      i18n (~> 0.4)\n    ffi (1.1.5)\n    hike (1.2.1)\n    i18n (0.6.1)\n    journey (1.0.4)\n    jquery-rails (2.0.2)\n      railties (>= 3.2.0, < 5.0)\n      thor (~> 0.14)\n    json (1.7.5)\n    libwebsocket (0.1.5)\n      addressable\n    mail (2.4.4)\n      i18n (>= 0.4.0)\n      mime-types (~> 1.16)\n      treetop (~> 1.4.8)\n    mime-types (1.19)\n    multi_json (1.3.6)\n    nokogiri (1.5.5)\n    pg (0.12.2)\n    polyglot (0.3.3)\n    rack (1.4.1)\n    rack-cache (1.2)\n      rack (>= 0.4)\n    rack-ssl (1.3.2)\n      rack\n    rack-test (0.6.1)\n      rack (>= 1.0)\n    rails (3.2.8)\n      actionmailer (= 3.2.8)\n      actionpack (= 3.2.8)\n      activerecord (= 3.2.8)\n      activeresource (= 3.2.8)\n      activesupport (= 3.2.8)\n      bundler (~> 1.0)\n      railties (= 3.2.8)\n    railties (3.2.8)\n      actionpack (= 3.2.8)\n      activesupport (= 3.2.8)\n      rack-ssl (~> 1.3.2)\n      rake (>= 0.8.7)\n      rdoc (~> 3.4)\n      thor (>= 0.14.6, < 2.0)\n    rake (0.9.2.2)\n    rdoc (3.12)\n      json (~> 1.4)\n    rspec (2.11.0)\n      rspec-core (~> 2.11.0)\n      rspec-expectations (~> 2.11.0)\n      rspec-mocks (~> 2.11.0)\n    rspec-core (2.11.1)\n    rspec-expectations (2.11.3)\n      diff-lcs (~> 1.1.3)\n    rspec-mocks (2.11.2)\n    rspec-rails (2.11.0)\n      actionpack (>= 3.0)\n      activesupport (>= 3.0)\n      railties (>= 3.0)\n      rspec (~> 2.11.0)\n    rubyzip (0.9.9)\n    sass (3.2.1)\n    sass-rails (3.2.5)\n      railties (~> 3.2.0)\n      sass (>= 3.1.10)\n      tilt (~> 1.3)\n    selenium-webdriver (2.25.0)\n      childprocess (>= 0.2.5)\n      libwebsocket (~> 0.1.3)\n      multi_json (~> 1.0)\n      rubyzip\n    sprockets (2.1.3)\n      hike (~> 1.2)\n      rack (~> 1.0)\n      tilt (~> 1.1, != 1.3.0)\n    sqlite3 (1.3.5)\n    thor (0.16.0)\n    tilt (1.3.3)\n    treetop (1.4.10)\n      polyglot\n      polyglot (>= 0.3.1)\n    tzinfo (0.3.33)\n    uglifier (1.2.3)\n      execjs (>= 0.3.0)\n      multi_json (>= 1.0.2)\n    will_paginate (3.0.3)\n    xpath (0.1.4)\n      nokogiri (~> 1.3)\n\nPLATFORMS\n  ruby\n\nDEPENDENCIES\n  annotate (= 2.5.0)\n  bcrypt-ruby (= 3.0.1)\n  bootstrap-sass (= 2.0.4)\n  bootstrap-will_paginate (= 0.0.6)\n  capybara (= 1.1.2)\n  coffee-rails (= 3.2.2)\n  factory_girl_rails (= 1.4.0)\n  faker (= 1.0.1)\n  jquery-rails (= 2.0.2)\n  pg (= 0.12.2)\n  rails (= 3.2.8)\n  rspec-rails (= 2.11.0)\n  sass-rails (= 3.2.5)\n  sqlite3 (= 1.3.5)\n  uglifier (= 1.2.3)\n  will_paginate (= 3.0.3)\n
+===================================================================
+--- Gemfile.lock	(revision e5147d700f1dd2ebeae19709c50844370baafba3)
++++ Gemfile.lock	(revision )
+@@ -53,6 +53,14 @@
+       coffee-script-source
+       execjs
+     coffee-script-source (1.3.3)
++    columnize (0.3.6)
++    debugger (1.2.0)
++      columnize (>= 0.3.1)
++      debugger-linecache (~> 1.1.1)
++      debugger-ruby_core_source (~> 1.1.3)
++    debugger-linecache (1.1.2)
++      debugger-ruby_core_source (>= 1.1.1)
++    debugger-ruby_core_source (1.1.3)
+     diff-lcs (1.1.3)
+     erubis (2.7.0)
+     execjs (1.4.0)
+@@ -72,6 +80,7 @@
+       railties (>= 3.2.0, < 5.0)
+       thor (~> 0.14)
+     json (1.7.5)
++    libv8 (3.3.10.4)
+     libwebsocket (0.1.5)
+       addressable
+     mail (2.4.4)
+@@ -137,6 +146,8 @@
+       rack (~> 1.0)
+       tilt (~> 1.1, != 1.3.0)
+     sqlite3 (1.3.5)
++    therubyracer (0.10.2)
++      libv8 (~> 3.3.10)
+     thor (0.16.0)
+     tilt (1.3.3)
+     treetop (1.4.10)
+@@ -160,6 +171,7 @@
+   bootstrap-will_paginate (= 0.0.6)
+   capybara (= 1.1.2)
+   coffee-rails (= 3.2.2)
++  debugger
+   factory_girl_rails (= 1.4.0)
+   faker (= 1.0.1)
+   jquery-rails (= 2.0.2)
+@@ -168,5 +180,6 @@
+   rspec-rails (= 2.11.0)
+   sass-rails (= 3.2.5)
+   sqlite3 (= 1.3.5)
++  therubyracer
+   uglifier (= 1.2.3)
+   will_paginate (= 3.0.3)
+Index: app/controllers/microposts_controller.rb
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>class MicropostsController < ApplicationController\n  before_filter :signed_in_user, only: [:create, :destroy]\n  before_filter :correct_user,   only: :destroy\n\n  def create\n    @micropost = current_user.microposts.build(params[:micropost])\n    if @micropost.save\n      flash[:success] = \"Mini Twitter Text Message created!\"\n      redirect_to root_url\n    else\n      @feed_items = []\n      render 'static_pages/home'\n    end\n  end\n\n  def destroy\n    @micropost.destroy\n    redirect_to root_url\n  end\n\n  private\n\n    def correct_user\n      @micropost = current_user.microposts.find_by_id(params[:id])\n      redirect_to root_url if @micropost.nil?\n    end\nend
+===================================================================
+--- app/controllers/microposts_controller.rb	(revision e5147d700f1dd2ebeae19709c50844370baafba3)
++++ app/controllers/microposts_controller.rb	(revision )
+@@ -18,6 +18,12 @@
+     redirect_to root_url
+   end
+ 
++  def like
++    flash[:success] = "Liked!"
++    Like.create!(:user_id=> current_user.id, :micropost_id=> params[:id])
++    redirect_to root_url
++  end
++
+   private
+ 
+     def correct_user
+\ No newline at end of file

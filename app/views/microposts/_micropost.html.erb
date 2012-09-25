@@ -5,8 +5,11 @@
   </span>
   <% if current_user?(micropost.user) %>
     <%= link_to "delete", micropost, method: :delete,
+
                                      data: { confirm: "Are You sure? This might be very important" },
                                      title: micropost.content %>
-  <% end %>
+  <%else%>
+      <%= link_to "like", like_path, method: :like  %>
+<% end %>
   <%= link_to "Need Help?",help_path %>
 </li>

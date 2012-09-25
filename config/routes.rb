@@ -6,13 +6,12 @@ SampleApp::Application.routes.draw do
   end
   #get "users/new" 20120916 masked by listinig 7.3
   resources :sessions, only: [:new, :create, :destroy]
-  resources :microposts, only: [:create, :destroy]
-
-  resources :sessions,      only: [:new, :create, :destroy]
-  resources :microposts,    only: [:create, :destroy]
+  resources :microposts, only: [:create, :destroy, :like]
   resources :relationships, only: [:create, :destroy]
 
   root to: 'static_pages#home'
+
+  match '/like/:id', to: 'microposts#like', as: 'like'
 
   match '/signup',  to: 'users#new'
   match '/signin',  to: 'sessions#new'
