@@ -9,7 +9,11 @@
                                      data: { confirm: "Are You sure? This might be very important" },
                                      title: micropost.content %>
   <%else%>
-      <%= link_to "like", like_path, method: :like  %>
+      <%if Like.exists?(:micropost_id=>micropost.id,:user_id=>current_user.id)%>
+          <%= "Liked" %>
+      <%else%>
+          <%= link_to "like", like_path, method: :like  %>
+      <%end%>
 <% end %>
   <%= link_to "Need Help?",help_path %>
 </li>
