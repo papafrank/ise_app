@@ -2,6 +2,8 @@ class UsersController < ApplicationController
   before_filter :signed_in_user, only: [:index, :edit, :update, :destroy, :following, :followers]
   before_filter :correct_user,   only: [:edit, :update]
   before_filter :admin_user,     only: :destroy
+
+
   def show
     @user = User.find(params[:id])
     @microposts = @user.microposts.paginate(page: params[:page])
@@ -25,6 +27,10 @@ class UsersController < ApplicationController
 
   def index
     @users = User.paginate(page: params[:page])
+
+    respond_to do |format|
+      format.xml { render :xml => @users }
+    end
   end
 
   def edit
@@ -62,14 +68,6 @@ class UsersController < ApplicationController
 
 
   private
-
-    # The signed_in_user has been moved to the session_helper.rb (Listing 10.27)
-    #def signed_in_user
-    #  unless signed_in?
-    #    store_location
-    #    redirect_to signin_url, notice: "Please sign in."
-    #  end
-    #end
 
     def correct_user
       @user = User.find(params[:id])
